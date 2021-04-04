@@ -36,3 +36,6 @@
 #define IRQ_ERROR       19
 #define IRQ_SPURIOUS    31
 
+
+// This is new entrypoint with interrupt number 128.
+#define T_NEW_SYSCALL	128	//another system call, switch user to kernel
