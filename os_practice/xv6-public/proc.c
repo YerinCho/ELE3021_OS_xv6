@@ -332,6 +332,35 @@ scheduler(void)
 
     // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+
+#ifdef FCFS
+    // FCFS scheduler
+    struct proc *first_p = 0;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      if(p->state == RUNNABLE) { // RUNNABLE == ready state
+        if(first_p == 0) {
+	  first_p = p;
+	}
+	else {
+	  if(first_p->pid > p->pid) {
+	    first_p = p;
+	  }
+	}
+      }
+	  
+    }
+    if(first_p != 0) {
+      c->proc = first_p;
+      switchuvm(first_p);
+      first_p->state = RUNNING;
+
+      swtch(&(c->scheduler), first_p->context);
+      switchkvm();
+
+      c->proc = 0;
+    }
+
+#elif DEFAULT
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -350,8 +379,9 @@ scheduler(void)
       // It should have changed its p->state before coming back.
       c->proc = 0;
     }
-    release(&ptable.lock);
 
+#endif
+    release(&ptable.lock);
   }
 }
 
