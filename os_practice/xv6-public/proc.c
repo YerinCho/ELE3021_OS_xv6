@@ -353,6 +353,7 @@ scheduler(void)
       c->proc = first_p;
       switchuvm(first_p);
       first_p->state = RUNNING;
+      first_p->pticks = 0;
 
       swtch(&(c->scheduler), first_p->context);
       switchkvm();
