@@ -113,7 +113,7 @@ trap(struct trapframe *tf)
      tf->trapno == T_IRQ0+IRQ_TIMER) {
 #ifdef FCFS
     if (ticks - myproc()->pticks >= 200) {
-       exit(); 
+       kill(myproc()->pid); 
     }
 #elif DEFAULT
       yield();
