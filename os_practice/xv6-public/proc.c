@@ -86,6 +86,7 @@ allocproc(void)
   return 0;
 
 found:
+  p->pticks = ticks;
   p->state = EMBRYO;
   p->pid = nextpid++;
 
@@ -353,7 +354,7 @@ scheduler(void)
       c->proc = first_p;
       switchuvm(first_p);
       first_p->state = RUNNING;
-      first_p->pticks = 0;
+      first_p->pticks = ticks;
 
       swtch(&(c->scheduler), first_p->context);
       switchkvm();

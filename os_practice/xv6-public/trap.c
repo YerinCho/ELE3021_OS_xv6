@@ -58,7 +58,6 @@ trap(struct trapframe *tf)
     if(cpuid() == 0){
       acquire(&tickslock);
       ticks++;
-      myproc()->pticks++;
       wakeup(&ticks);
       release(&tickslock);
     }
@@ -113,7 +112,7 @@ trap(struct trapframe *tf)
   if(myproc() && myproc()->state == RUNNING &&
      tf->trapno == T_IRQ0+IRQ_TIMER) {
 #ifdef FCFS
-    if (myproc()->pticks >= 200) {
+    if (ticks - myproc()->pticks >= 200) {
        exit(); 
     }
 #elif DEFAULT
