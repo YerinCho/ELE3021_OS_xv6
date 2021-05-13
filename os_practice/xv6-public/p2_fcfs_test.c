@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
   for (int i = 0; i < NUM_LOOP; i++) {
     if (p == 0) {
       printf(1, "process %d\n", getpid());
-      sleep(12);
+      sleep(1);
     }
   }
 
