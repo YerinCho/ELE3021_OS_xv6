@@ -365,30 +365,35 @@ scheduler(void)
 #elif MQ
     // Multilevel Queue scheduler(RR and FCFS)
     struct proc *sched_p = 0;
-    int turn = 0;
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      if (p->pid % 2 != 0) {
-        continue;
-      }
-      if (p->state == RUNNABLE && sched_p == 0) {
-        sched_p = p;
-        turn = 1;
-      }
-    }
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-      if (turn == 1) break;
-      if (p->pid % 2 == 0) continue;
-
-      if (sched_p == 0) {
-        sched_p = p;
-      }
-      else {
-        if (sched_p->pid > p->pid) {
-          sched_p = p;
+    for(;;) {
+      sched_p = 0;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->pid % 2 != 0 || p->state != RUNNABLE) {
+          continue;
         }
+          sched_p = p;
+          c->proc = sched_p;
+          switchuvm(sched_p);
+          sched_p->state = RUNNING;
+          sched_p->pticks = ticks;
+
+          swtch(&(c->scheduler), sched_p->context);
+          switchkvm();
+ 
+          c->proc = 0;
+      }
+      if (sched_p == 0) break;
+    }
+
+    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+      if (p->pid % 2 == 0 || p->state != RUNNABLE) continue;
+
+      if (sched_p == 0 || sched_p->pid > p->pid) {
+        sched_p = p;
       }
     }
-    if (sched_p != 0) {
+
+    if (sched_p != 0 && sched_p->pid % 2 != 0) {
       c->proc = sched_p;
       switchuvm(sched_p);
       sched_p->state = RUNNING;
@@ -396,7 +401,7 @@ scheduler(void)
 
       swtch(&(c->scheduler), sched_p->context);
       switchkvm();
-  
+
       c->proc = 0;
     }
 
