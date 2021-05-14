@@ -115,6 +115,15 @@ trap(struct trapframe *tf)
     if (ticks - myproc()->pticks >= 200) {
        kill(myproc()->pid); 
     }
+#elif MQ
+    if (myproc()->pid % 2 == 0) {
+      yield();
+    }
+    else {
+      if (ticks - myproc()->pticks >= 200) {
+         kill(myproc()->pid);
+      }
+    }
 #elif DEFAULT
       yield();
 #endif
