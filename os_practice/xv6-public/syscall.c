@@ -105,6 +105,9 @@ extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_getppid(void);
 extern int sys_yield(void);
+extern int sys_getlev(void);
+extern int sys_setpriority(void);
+extern int sys_monopolize(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -129,7 +132,10 @@ static int (*syscalls[])(void) = {
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
 [SYS_getppid] sys_getppid,
-[SYS_yield]   sys_yield
+[SYS_yield]   sys_yield,
+[SYS_getlev]  sys_getlev,
+[SYS_setpriority] sys_setpriority,
+[SYS_monopolize] sys_monopolize
 };
 
 void

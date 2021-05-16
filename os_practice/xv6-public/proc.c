@@ -623,7 +623,10 @@ setpriority(int pid, int priority)
       break;
     }  
   }
-  if (target_proc == 0) return -1;
+  if (target_proc == 0) {
+    release(&ptable.lock);
+    return -1;
+  }
   p->priority = priority;
 #endif
   release(&ptable.lock);

@@ -30,7 +30,10 @@ OBJS = \
 	uart.o\
 	vectors.o\
 	vm.o\
-	prac_yield.o\
+	yield.o\
+	monopolize.o\
+	getlev.o\
+	setpriority.o\
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf
@@ -187,9 +190,9 @@ UPROGS=\
 	_zombie\
 	_project01_1\
 	_project01_2\
-	_yield_test\
 	_p2_fcfs_test\
 	_p2_ml_test\
+	_p2_mlfq_test\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -259,7 +262,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
-	printf.c umalloc.c project01_1.c project01_2.c yield_test.c p2_fcfs_test.c p2_ml_test.c\
+	printf.c umalloc.c project01_1.c project01_2.c yield.c p2_fcfs_test.c p2_ml_test.c p2_mlfq_test.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
