@@ -10,11 +10,7 @@
 
 int sys_getlev() {
 #ifdef MLFQ
-  int lev = getlev();
-  if (lev == -1) {
-//    printf(0, "Cannot get level of process: not MLFQ");
-  }
-  return lev;
+  return getlev();
 #endif
   return -1;
 }

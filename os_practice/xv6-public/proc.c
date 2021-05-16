@@ -711,7 +711,7 @@ void monopolize(int password)
   struct proc *curproc = myproc();
   acquire(&ptable.lock);
   if (pw != password) {
-    cprintf("password is wrong. pid: %d", curproc->pid);
+    cprintf("password is wrong. pid: %d\n", curproc->pid);
     release(&ptable.lock);
     kill(curproc->pid);
   }
