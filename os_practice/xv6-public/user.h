@@ -25,6 +25,9 @@ int sleep(int);
 int uptime(void);
 int getppid(void);
 int yield(void);
+int setpriority(int, int);
+int getlev(void);
+void monopolize(int);
 
 // ulib.c
 int stat(const char*, struct stat*);

@@ -8,10 +8,13 @@
 #include "memlayout.h"
 #include "proc.h"
 
-int main() {
+int sys_getlev() {
+#ifdef MLFQ
   int lev = getlev();
   if (lev == -1) {
-    cprintf("Cannot get level of process: not MLFQ");
+//    printf(0, "Cannot get level of process: not MLFQ");
   }
   return lev;
+#endif
+  return -1;
 }

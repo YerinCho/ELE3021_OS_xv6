@@ -405,6 +405,64 @@ scheduler(void)
       c->proc = 0;
     }
 
+#elif MLFQ
+    // Multilevel Feedback Queue scheduler
+    struct proc *sched_p = 0;
+    for(;;) {
+      if(sched_p != 0 && sched_p->monopolized != 0) {
+        cprintf("mono, pid: %d, is: %d\n", sched_p->pid, sched_p->monopolized);
+        continue;
+      }
+      sched_p = 0;
+      for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->monopolized != 0) {
+          sched_p = p;
+          break;
+        }
+        if (p->level != 0 || p->state != RUNNABLE) {
+          continue;
+        }
+        sched_p = p;
+        c->proc = sched_p;
+        switchuvm(sched_p);
+        sched_p->state = RUNNING;
+        sched_p->pticks = ticks;
+
+        swtch(&(c->scheduler), sched_p->context);
+        switchkvm();
+
+        c->proc = 0;
+      }
+      if (sched_p == 0) break;
+    }
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+        if (p->level!= 1 || p->state != RUNNABLE) {
+          continue;
+        }
+        if (sched_p == 0) {
+          sched_p = p;
+        }
+        if (sched_p->priority > p->priority) {
+          sched_p = p;
+        }
+        if (sched_p->priority == p->priority && sched_p->pid > p->pid) {
+          sched_p = p;
+        }
+    }
+    if (sched_p != 0 && sched_p->level == 1) {
+      sched_p = p;
+      c->proc = sched_p;
+      switchuvm(sched_p);
+      sched_p->state = RUNNING;
+      sched_p->pticks = ticks;
+
+      swtch(&(c->scheduler), sched_p->context);
+      switchkvm();
+
+      c->proc = 0;
+    }
+
 #elif DEFAULT
     // RR scheduler
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -609,37 +667,35 @@ procdump(void)
   }
 }
 
+#ifdef MLFQ
+
 int
 setpriority(int pid, int priority)
 {
   struct proc *target_proc = 0;
+  struct proc *p;
   if(priority < 0 || priority > 10) return -2;
 
   acquire(&ptable.lock);
-#ifdef MLFQ
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
     if (p->pid == pid) {
       target_proc = p;
       break;
     }  
   }
+  if (target_proc != 0) {
+    target_proc->priority = priority;
+  }
+  release(&ptable.lock);
   if (target_proc == 0) {
-    release(&ptable.lock);
     return -1;
   }
-  p->priority = priority;
-#endif
-  release(&ptable.lock);
   return 0;
 }
 
 int getlev(void)
 {
-#ifdef MLFQ
   return myproc()->level;
-#else
-  return -1;
-#endif
 }
 
 void monopolize(int password)
@@ -647,9 +703,9 @@ void monopolize(int password)
   int pw = 2018007783;
   struct proc *curproc = myproc();
   acquire(&ptable.lock);
-#ifdef MLQF
   if (pw != password) {
     cprintf("password is wrong. pid: %d", curproc->pid);
+    release(&ptable.lock);
     kill(curproc->pid);
   }
   else {
@@ -661,7 +717,7 @@ void monopolize(int password)
       curproc->level = 0;
       curproc->priority = 0;
     }
+    release(&ptable.lock);
   }
-#endif
-  release(&ptable.lock);
 }
+#endif

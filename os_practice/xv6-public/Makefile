@@ -31,9 +31,9 @@ OBJS = \
 	vectors.o\
 	vm.o\
 	yield.o\
-	monopolize.o\
 	getlev.o\
 	setpriority.o\
+	monopolize.o\
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf

@@ -8,6 +8,7 @@
 #include "memlayout.h"
 #include "proc.h"
 
-void main(void) {
+int sys_yield(void) {
   yield();
+  return 0;
 }
