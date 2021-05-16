@@ -123,6 +123,7 @@ void            yield(void);
 int             setpriority(int, int);
 int             getlev(void);
 void            monopolize(int);
+void		boostpriority(void);
 
 // swtch.S
 void            swtch(struct context**, struct context*);

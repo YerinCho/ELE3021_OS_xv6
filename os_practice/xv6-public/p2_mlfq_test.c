@@ -98,7 +98,7 @@ int main(int argc, char **argv) {
       cnt[getlev()]++;
     printf(1, "process %d: L0=%d, L1=%d\n", pid, cnt[0], cnt[1]);
     if (me == NUM_CHILD - 1)
-      monopolize(2018007783);
+      monopolize(180077833);
   }  
 
   exit_child(p);

@@ -439,7 +439,7 @@ scheduler(void)
         if (sched_p == 0) {
           sched_p = p;
         }
-        if (sched_p->priority > p->priority) {
+        if (sched_p->priority < p->priority) {
           sched_p = p;
         }
         if (sched_p->priority == p->priority && sched_p->pid > p->pid) {
@@ -663,6 +663,18 @@ procdump(void)
 }
 
 #ifdef MLFQ
+
+void
+boostpriority()
+{
+  struct proc *p;
+  acquire(&ptable.lock);
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    p->level = 0;
+    p->priority = 0; 
+  }
+  release(&ptable.lock);
+}
 
 int
 setpriority(int pid, int priority)

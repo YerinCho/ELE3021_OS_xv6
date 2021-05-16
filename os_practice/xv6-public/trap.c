@@ -141,8 +141,7 @@ trap(struct trapframe *tf)
   }
 #ifdef MLFQ
   if (ticks % 200 == 0) {
-      //do boost
-      cprintf("boost\n");
+    boostpriority();
   }
 #endif
   // Check if the process has been killed since we yielded
