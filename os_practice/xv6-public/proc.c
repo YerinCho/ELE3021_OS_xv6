@@ -630,4 +630,35 @@ setpriority(int pid, int priority)
   return 0;
 }
 
+int getlev(void)
+{
+#ifdef MLFQ
+  return myproc()->level;
+#else
+  return -1;
+#endif
+}
 
+void monopolize(int password)
+{
+  int pw = 2018007783;
+  struct proc *curproc = myproc();
+  acquire(&ptable.lock);
+#ifdef MLQF
+  if (pw != password) {
+    cprintf("password is wrong. pid: %d", curproc->pid);
+    kill(curproc->pid);
+  }
+  else {
+    if (curproc->monopolized == 0) {
+      curproc->monopolized = 1;
+    }
+    else {
+      curproc->monopolized = 0;
+      curproc->level = 0;
+      curproc->priority = 0;
+    }
+  }
+#endif
+  release(&ptable.lock);
+}
