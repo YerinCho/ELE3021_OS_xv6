@@ -608,3 +608,26 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int
+setpriority(int pid, int priority)
+{
+  struct proc *target_proc = 0;
+  if(priority < 0 || priority > 10) return -2;
+
+  acquire(&ptable.lock);
+#ifdef MLFQ
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->pid == pid) {
+      target_proc = p;
+      break;
+    }  
+  }
+  if (target_proc == 0) return -1;
+  p->priority = priority;
+#endif
+  release(&ptable.lock);
+  return 0;
+}
+
+
