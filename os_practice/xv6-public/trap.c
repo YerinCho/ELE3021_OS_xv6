@@ -124,11 +124,27 @@ trap(struct trapframe *tf)
          kill(myproc()->pid);
       }
     }
+#elif MLFQ
+    if (myproc()->level == 0 && ticks - myproc()->pticks >= 4 && myproc()->monopolized == 0) {
+      myproc()->level = 1;
+      yield();
+    }
+    if (myproc()->level == 1 && ticks - myproc()->pticks >= 8 && myproc()->monopolized == 0) {
+      if (myproc()->priority > 0) {
+        myproc()->priority--;
+      }
+      yield();
+    }
 #elif DEFAULT
       yield();
 #endif
-}
-
+  }
+#ifdef MLFQ
+  if (ticks % 200 == 0) {
+      //do boost
+      cprintf("boost\n");
+  }
+#endif
   // Check if the process has been killed since we yielded
   if(myproc() && myproc()->killed && (tf->cs&3) == DPL_USER)
     exit();

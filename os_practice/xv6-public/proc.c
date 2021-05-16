@@ -90,6 +90,10 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
 
+  p->level = 0;
+  p->monopolized = 0;
+  p->priority = 0;
+
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -409,16 +413,8 @@ scheduler(void)
     // Multilevel Feedback Queue scheduler
     struct proc *sched_p = 0;
     for(;;) {
-      if(sched_p != 0 && sched_p->monopolized != 0) {
-        cprintf("mono, pid: %d, is: %d\n", sched_p->pid, sched_p->monopolized);
-        continue;
-      }
       sched_p = 0;
       for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if (p->monopolized != 0) {
-          sched_p = p;
-          break;
-        }
         if (p->level != 0 || p->state != RUNNABLE) {
           continue;
         }
@@ -451,7 +447,6 @@ scheduler(void)
         }
     }
     if (sched_p != 0 && sched_p->level == 1) {
-      sched_p = p;
       c->proc = sched_p;
       switchuvm(sched_p);
       sched_p->state = RUNNING;
