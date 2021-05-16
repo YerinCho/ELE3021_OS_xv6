@@ -49,7 +49,11 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
   int pticks;		       // Running time after scheduled
+  int level;                   // Level of process, default level is 0
+  int priority;                // priority of process when level is 1
+  int monopolized;             // If non-zero, monopolize cpu
 };
 
 // Process memory is laid out contiguously, low addresses first:
