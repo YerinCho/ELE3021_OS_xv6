@@ -469,10 +469,12 @@ itrunc(struct inode *ip)
         }
         brelse(d_bp);
         bfree(ip->dev, a[i]);
+        a[i] = 0;
       }
     }
     brelse(bp);
     bfree(ip->dev, ip->addrs[NDIRECT + 1]);
+    ip->addrs[NDIRECT + 1] = 0;
   }
 
   ip->size = 0;
